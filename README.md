@@ -1,10 +1,10 @@
-# Laboratório Backend --- API REST e Microsserviços
+# Laboratório API REST e Microsserviços
 
 Este laboratório faz parte da disciplina **Backend: Cloud Computing** e
 apresenta, de forma prática e incremental, a implementação de uma **API
 REST com Java e Spring Boot**.
 
-O exemplo utiliza o **MyTracker**, uma solução pessoal integrada que
+O exemplo utiliza o **MyTracker**, uma solução integrada que
 poderá evoluir ao longo da disciplina para uma arquitetura Cloud Native
 composta por diferentes microsserviços.
 
@@ -292,13 +292,15 @@ Portanto, **não descarte o projeto criado neste laboratório**. A mesma
 aplicação será evoluída progressivamente até compor uma solução Cloud
 Native distribuída.
 
-## DevLabs
+## DevLabs 
 
-O passo a passo completo deste laboratório está disponível no **DevLabs
---- Escola de Dev**.
+O passo a passo completo deste laboratório está disponível no **DevLabs**:
 
-------------------------------------------------------------------------
+**Laboratório API REST e Microsserviços:**  
+https://devlabs.escdodev.com.br/labs/backend-api-rest
 
-**Disciplina:** Backend: Cloud Computing\
-**Projeto de referência:** MyTracker\
+---
+
+**Disciplina:** Backend: Cloud Computing  
+**Projeto de referência:** MyTracker  
 **Microsserviço:** `ms-task`
