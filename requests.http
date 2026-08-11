@@ -1,0 +1,32 @@
+### Listar tarefas
+GET http://localhost:8080/tasks
+Accept: application/json
+
+### Criar tarefa
+POST http://localhost:8080/tasks
+Content-Type: application/json
+
+{
+  "titulo": "Estudar Cloud Computing",
+  "descricao": "Revisar APIs REST e microsserviços",
+  "prioridade": "ALTA",
+  "concluida": false
+}
+
+### Buscar tarefa 1
+GET http://localhost:8080/tasks/1
+Accept: application/json
+
+### Atualizar tarefa 1
+PUT http://localhost:8080/tasks/1
+Content-Type: application/json
+
+{
+  "titulo": "Estudar Cloud Computing",
+  "descricao": "Finalizar o laboratório de API REST",
+  "prioridade": "MEDIA",
+  "concluida": true
+}
+
+### Excluir tarefa 1
+DELETE http://localhost:8080/tasks/1
