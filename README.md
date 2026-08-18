@@ -234,7 +234,7 @@ Resposta esperada: **204 No Content**.
 Depois de concluir o exemplo do **MyTracker**, adapte a implementação ao
 cenário definido pela sua equipe.
 
-1.  Identifique uma capacidade de negócio candidata a microsserviço.
+1.  Identifique uma funcionalidade de negócio candidata a microsserviço.
 3.  Defina o recurso principal e seus atributos.
 4.  Defina os endpoints REST.
 5.  Crie um projeto Spring Boot independente.
