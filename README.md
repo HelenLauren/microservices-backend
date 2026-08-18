@@ -17,7 +17,7 @@ Para clonar diretamente a versão utilizada no **Laboratório 01**, execute:
 
 ```bash
 git clone --branch lab-01 https://gitlab.com/gilbriatore/2026/backend/my-tracker/ms-task.git
-
+```
 ## Objetivo
 
 Compreender como uma API REST é organizada em uma aplicação Spring Boot
