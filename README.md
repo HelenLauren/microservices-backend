@@ -234,8 +234,7 @@ Resposta esperada: **204 No Content**.
 Depois de concluir o exemplo do **MyTracker**, adapte a implementação ao
 cenário definido pela sua equipe.
 
-1.  Escolha um **Epic ou Feature** do projeto no Azure Boards.
-2.  Identifique uma capacidade de negócio candidata a microsserviço.
+1.  Identifique uma capacidade de negócio candidata a microsserviço.
 3.  Defina o recurso principal e seus atributos.
 4.  Defina os endpoints REST.
 5.  Crie um projeto Spring Boot independente.
@@ -257,40 +256,6 @@ cenário definido pela sua equipe.
 -   [ ] `DELETE` remove um recurso e retorna `204`.
 -   [ ] Um ID inexistente retorna `404`.
 -   [ ] O código foi versionado no repositório da equipe.
-
-## Evolução durante a disciplina
-
-Este microsserviço será utilizado como base para as próximas etapas da
-disciplina:
-
-``` text
-API REST e Microsserviços
-          |
-          v
-        Docker
-          |
-          v
- Kubernetes + Service Discovery
-          |
-          v
-   NGINX Ingress
-          |
-          v
-      RabbitMQ
-          |
-          v
-         JWT
-          |
-          v
-        Helm
-          |
-          v
-Prometheus + Grafana
-```
-
-Portanto, **não descarte o projeto criado neste laboratório**. A mesma
-aplicação será evoluída progressivamente até compor uma solução Cloud
-Native distribuída.
 
 ## DevLabs 
 
