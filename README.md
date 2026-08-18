@@ -1,88 +1,87 @@
-# Laboratório API REST e Microsserviços
+# Laboratório 02 — API REST, MySQL, Swagger e Docker
 
-Este laboratório faz parte da disciplina **Backend: Cloud Computing** e
-apresenta, de forma prática e incremental, a implementação de uma **API
-REST com Java e Spring Boot**.
+Este laboratório faz parte da disciplina **Backend: Cloud Computing** e dá continuidade à evolução incremental do microsserviço **`ms-task`** do projeto **MyTracker**.
 
-O exemplo utiliza o **MyTracker**, uma solução integrada que
-poderá evoluir ao longo da disciplina para uma arquitetura Cloud Native
-composta por diferentes microsserviços.
+No **Lab 01**, o microsserviço disponibilizava uma API REST com Java e Spring Boot e mantinha as tarefas somente em memória. Nesta segunda etapa, a aplicação passa a utilizar **persistência com MySQL**, documentação e testes da API com **Swagger/OpenAPI** e execução em **contêiner Docker**.
 
-Nesta primeira etapa será desenvolvido o microsserviço **`ms-task`**,
-responsável pelo contexto de **Gestão de Tarefas**.
+## Clonar a versão do Lab 02
 
-### Clonar a versão do Lab 01
+Para clonar diretamente a versão utilizada no **Laboratório 02**, execute:
 
-Para clonar diretamente a versão utilizada no **Laboratório 01**, execute:
-
-```bash
-git clone --branch lab-01 https://gitlab.com/gilbriatore/2026/backend/my-tracker/ms-task.git
+```powershell
+git clone --branch lab-02 https://gitlab.com/gilbriatore/2026/backend/my-tracker/ms-task.git
 ```
+
+> A tag `lab-02` preserva a versão do `ms-task` utilizada neste laboratório.
+
 ## Objetivo
 
-Compreender como uma API REST é organizada em uma aplicação Spring Boot
-e implementar um microsserviço simples utilizando separação de
-responsabilidades entre **Domain**, **Service** e **Controller**.
+Evoluir o microsserviço `ms-task` construído no Lab 01, adicionando persistência de dados e conteinerização, mantendo a separação de responsabilidades da aplicação.
 
-Ao final do laboratório, a aplicação deverá disponibilizar operações
-REST para cadastrar, consultar, atualizar e excluir tarefas.
+Ao final do laboratório, o aluno deverá ser capaz de:
+
+- persistir tarefas em um banco **MySQL**;
+- utilizar **Spring Data JPA** para acesso aos dados;
+- documentar e testar a API com **Swagger/OpenAPI**;
+- gerar uma imagem Docker do microsserviço;
+- executar o Spring Boot e o MySQL em contêineres conectados pela mesma rede Docker;
+- versionar e publicar a imagem do microsserviço no Docker Hub.
 
 ## Tecnologias
 
--   Java 17 ou superior
--   Spring Boot
--   Spring Web
--   Maven
--   IntelliJ IDEA
--   HTTP/JSON
--   IntelliJ HTTP Client, Postman ou Insomnia
+- Java 17 ou superior
+- Spring Boot
+- Spring Web
+- Spring Data JPA
+- MySQL
+- MySQL Driver
+- Maven
+- Swagger / OpenAPI (`springdoc-openapi`)
+- Docker
+- Docker Hub
+- IntelliJ IDEA
+- HTTP / JSON
 
-## Arquitetura desta versão
+## Evolução em relação ao Lab 01
 
-``` text
+No Lab 01, a arquitetura era:
+
+```text
 Cliente HTTP
      |
      v
 TaskController
      |
      v
- TaskService
+TaskService
      |
      v
 List<Task> / memória
 ```
 
-Nesta primeira versão os dados são mantidos **somente em memória**.
-Ainda não são utilizados banco de dados, Docker, Kubernetes, RabbitMQ,
-segurança ou mecanismos externos de Service Discovery.
+No Lab 02, a persistência passa a fazer parte da aplicação:
 
-Esses componentes serão incorporados progressivamente nas próximas
-aulas.
-
-## Projeto Spring Boot
-
-Configuração utilizada no laboratório:
-
-``` text
-Language: Java
-Type: Maven
-Group: br.mytracker
-Artifact: ms-task
-Package: br.mytracker.mstask
-Packaging: Jar
-Java: 17 ou superior
+```text
+Cliente HTTP
+     |
+     v
+TaskController
+     |
+     v
+TaskService
+     |
+     v
+TaskRepository
+     |
+     v
+   MySQL
 ```
 
-Dependências:
-
--   **Spring Web** --- criação dos endpoints HTTP.
--   **Spring Boot DevTools** --- apoio ao desenvolvimento.
--   **Spring Boot Starter Test** --- normalmente incluído pelo Spring
-    Initializr.
+A classe `Task` também passa a ser uma **entidade JPA**.
 
 ## Estrutura do projeto
 
-``` text
+```text
 ms-task
 ├── src
 │   └── main
@@ -94,33 +93,35 @@ ms-task
 │       │               │   └── TaskController.java
 │       │               ├── domain
 │       │               │   └── Task.java
+│       │               ├── repository
+│       │               │   └── TaskRepository.java
 │       │               ├── service
 │       │               │   └── TaskService.java
 │       │               └── MsTaskApplication.java
 │       └── resources
 │           └── application.properties
+├── Dockerfile
 ├── pom.xml
 └── requests.http
 ```
 
 ### Responsabilidade das camadas
 
--   **domain** --- representa os conceitos e objetos do contexto.
--   **controller** --- recebe requisições HTTP e produz respostas
-    REST/JSON.
--   **service** --- concentra as regras e operações da aplicação.
--   **repository** --- será utilizado posteriormente quando adicionarmos
-    persistência.
+- **domain** — representa os conceitos do domínio e contém a entidade JPA.
+- **controller** — recebe requisições HTTP e produz respostas REST/JSON.
+- **service** — concentra as operações e regras da aplicação.
+- **repository** — realiza o acesso aos dados utilizando Spring Data JPA.
+- **MySQL** — mantém os dados persistidos.
 
 ## Recurso Task
 
-Uma tarefa possui inicialmente a seguinte representação:
+Uma tarefa continua sendo representada pela API da seguinte forma:
 
-``` json
+```json
 {
   "id": 1,
   "titulo": "Estudar Cloud Computing",
-  "descricao": "Revisar APIs REST e microsserviços",
+  "descricao": "Revisar persistência e Docker",
   "prioridade": "ALTA",
   "concluida": false
 }
@@ -136,140 +137,273 @@ Uma tarefa possui inicialmente a seguinte representação:
 | `PUT` | `/tasks/{id}` | Atualizar uma tarefa |
 | `DELETE` | `/tasks/{id}` | Excluir uma tarefa |
 
-A URL identifica o **recurso**, enquanto o método HTTP representa a
-**operação** realizada sobre ele.
+## Persistência com MySQL
 
-## Executando a aplicação
+O MySQL é executado em um contêiner Docker conectado à rede `mytracker-net`.
 
-Pelo IntelliJ IDEA, execute a classe principal da aplicação.
+Crie a rede:
 
-Ou, na raiz do projeto:
-
-``` bash
-mvn spring-boot:run
+```powershell
+docker network create mytracker-net
 ```
 
-A aplicação estará disponível em:
+Execute o MySQL no **PowerShell (Windows)**:
 
-``` text
+```powershell
+docker run -d `
+  --name mysql-task `
+  --network mytracker-net `
+  -p 3306:3306 `
+  -e MYSQL_ROOT_PASSWORD=root `
+  -e MYSQL_DATABASE=taskdb `
+  mysql:8.4
+```
+
+No **Bash / Linux / macOS**:
+
+```bash
+docker run -d \
+  --name mysql-task \
+  --network mytracker-net \
+  -p 3306:3306 \
+  -e MYSQL_ROOT_PASSWORD=root \
+  -e MYSQL_DATABASE=taskdb \
+  mysql:8.4
+```
+
+Confirme:
+
+```powershell
+docker ps
+```
+
+## Configuração da aplicação
+
+O `application.properties` utiliza variáveis de ambiente para permitir que a mesma aplicação seja executada localmente ou dentro de um contêiner.
+
+Exemplo:
+
+```properties
+spring.datasource.url=jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:taskdb}
+spring.datasource.username=${DB_USER:root}
+spring.datasource.password=${DB_PASSWORD:root}
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+```
+
+Quando a aplicação é executada diretamente pelo IntelliJ, o valor padrão de `DB_HOST` é `localhost`.
+
+Quando o Spring Boot também é executado em contêiner, `DB_HOST` passa a receber `mysql-task`, nome pelo qual o banco pode ser localizado dentro da rede Docker.
+
+## Swagger / OpenAPI
+
+Com a dependência `springdoc-openapi-starter-webmvc-ui`, a documentação da API pode ser acessada em:
+
+```text
+http://localhost:8080/swagger-ui/index.html
+```
+
+A especificação OpenAPI fica disponível em:
+
+```text
+http://localhost:8080/v3/api-docs
+```
+
+O projeto também pode redirecionar a URL raiz:
+
+```text
 http://localhost:8080
 ```
 
-Para verificar inicialmente a API:
+para o Swagger UI.
 
-``` http
-GET http://localhost:8080/tasks
+No Swagger, teste as operações `GET`, `POST`, `PUT` e `DELETE`.
+
+## Gerando a aplicação
+
+Antes de construir a imagem Docker, gere o arquivo JAR:
+
+**PowerShell (Windows):**
+
+```powershell
+.\mvnw.cmd clean package
 ```
 
-Como os dados são mantidos em memória, a primeira resposta deverá ser:
+**Bash / Linux / macOS:**
 
-``` json
-[]
+```bash
+./mvnw clean package
 ```
 
-## Testando o CRUD
+Se o Maven estiver instalado globalmente:
 
-### Criar uma tarefa
-
-``` http
-POST http://localhost:8080/tasks
-Content-Type: application/json
-
-{
-  "titulo": "Estudar Cloud Computing",
-  "descricao": "Revisar APIs REST e microsserviços",
-  "prioridade": "ALTA",
-  "concluida": false
-}
+```powershell
+mvn clean package
 ```
 
-Resposta esperada: **201 Created**.
+O arquivo será gerado no diretório `target/`.
 
-### Listar tarefas
+## Criando a imagem Docker
 
-``` http
-GET http://localhost:8080/tasks
-Accept: application/json
+Na raiz do projeto:
+
+```powershell
+docker build -t ms-task:1.0.0 .
 ```
 
-Resposta esperada: **200 OK**.
+Confirme:
 
-### Consultar uma tarefa
-
-``` http
-GET http://localhost:8080/tasks/1
-Accept: application/json
+```powershell
+docker images
 ```
 
-Resposta esperada: **200 OK** ou **404 Not Found** caso o ID não exista.
+## Mudança de arquitetura
 
-### Atualizar uma tarefa
+Até este momento, ao executar o Spring Boot diretamente pelo IntelliJ, a arquitetura é:
 
-``` http
-PUT http://localhost:8080/tasks/1
-Content-Type: application/json
-
-{
-  "titulo": "Estudar Cloud Computing",
-  "descricao": "Finalizar o laboratório de API REST",
-  "prioridade": "MEDIA",
-  "concluida": true
-}
+```text
+ms-task executando no IntelliJ
+        |
+        | localhost:3306
+        v
++---------------------+
+| Container MySQL     |
+| mysql-task          |
+| porta 3306          |
++---------------------+
 ```
 
-Resposta esperada: **200 OK**.
+Nesse cenário, `localhost` representa a máquina onde o IntelliJ está executando a aplicação.
 
-### Excluir uma tarefa
+Ao executar também o Spring Boot em contêiner, a arquitetura muda:
 
-``` http
-DELETE http://localhost:8080/tasks/1
+```text
+              mytracker-net
++--------------------------------------+
+|                                      |
+|  +--------------+    +------------+  |
+|  |   ms-task    |--->| mysql-task |  |
+|  | Spring Boot  |    |   MySQL    |  |
+|  |    :8080     |    |   :3306    |  |
+|  +--------------+    +------------+  |
+|                                      |
++--------------------------------------+
+        |
+        | -p 8080:8080
+        v
+ http://localhost:8080
 ```
 
-Resposta esperada: **204 No Content**.
+Dentro do contêiner `ms-task`, `localhost` representa o próprio contêiner do Spring Boot. Por isso, o banco deve ser acessado pelo nome `mysql-task`.
 
-## Códigos HTTP utilizados
+Como ambos estão conectados à rede `mytracker-net`, o Docker fornece resolução de nomes entre os contêineres.
 
-| Código | Significado |
-|---|---|
-| `200 OK` | Consulta ou atualização realizada |
-| `201 Created` | Recurso criado |
-| `204 No Content` | Recurso excluído |
-| `404 Not Found` | Recurso não encontrado |
+## Executando o ms-task em contêiner
+
+**PowerShell (Windows):**
+
+```powershell
+docker run -d `
+  --name ms-task `
+  --network mytracker-net `
+  -p 8080:8080 `
+  -e DB_HOST=mysql-task `
+  -e DB_PORT=3306 `
+  -e DB_NAME=taskdb `
+  -e DB_USER=root `
+  -e DB_PASSWORD=root `
+  ms-task:1.0.0
+```
+
+O parâmetro:
+
+```text
+DB_HOST=mysql-task
+```
+
+faz com que o Spring Boot encontre o contêiner MySQL pela rede Docker.
+
+Confirme:
+
+```powershell
+docker ps
+```
+
+Depois acesse:
+
+```text
+http://localhost:8080
+```
+
+ou:
+
+```text
+http://localhost:8080/swagger-ui/index.html
+```
+
+## Publicando no Docker Hub
+
+Faça login:
+
+```powershell
+docker login
+```
+
+Substitua `<seu-usuario-dockerhub>` pelo seu usuário real do Docker Hub.
+
+Exemplo:
+
+```powershell
+docker tag ms-task:1.0.0 <seu-usuario-dockerhub>/ms-task:1.0.0
+docker tag ms-task:1.0.0 <seu-usuario-dockerhub>/ms-task:latest
+```
+
+Publique:
+
+```powershell
+docker push <seu-usuario-dockerhub>/ms-task:1.0.0
+docker push <seu-usuario-dockerhub>/ms-task:latest
+```
+
+> O nome do usuário e do repositório Docker deve estar em letras minúsculas.
 
 ## Atividade
 
-Depois de concluir o exemplo do **MyTracker**, adapte a implementação ao
-cenário definido pela sua equipe.
+Depois de concluir a evolução do `ms-task`, aplique os mesmos conceitos ao microsserviço definido pela sua equipe:
 
-1.  Identifique uma funcionalidade de negócio candidata a microsserviço.
-2.  Defina o recurso principal e seus atributos.
-3.  Defina os endpoints REST.
-4.  Crie um projeto Spring Boot independente.
-5.  Implemente as camadas `domain`, `service` e `controller`.
-6.  Mantenha os objetos em memória nesta primeira versão.
-7.  Teste `GET`, `POST`, `PUT` e `DELETE`.
-8.  Versione o código no repositório da equipe.
-9.  Relacione a implementação às Tasks técnicas correspondentes no Azure
-    Boards.
+1. transforme a classe de domínio em uma entidade JPA;
+2. crie o `Repository`;
+3. substitua o armazenamento em memória pela persistência;
+4. configure um banco de dados;
+5. documente e teste a API com Swagger/OpenAPI;
+6. crie o `Dockerfile`;
+7. gere a imagem Docker;
+8. execute aplicação e banco em contêineres;
+9. publique a imagem no Docker Hub;
+10. versione o código no repositório da equipe.
 
 ## Checklist
 
--   [ ] A aplicação inicia sem erros.
--   [ ] O contexto do microsserviço está claramente definido.
--   [ ] `GET` lista os recursos.
--   [ ] `GET /{id}` consulta um recurso.
--   [ ] `POST` cria um recurso e retorna `201`.
--   [ ] `PUT` atualiza um recurso.
--   [ ] `DELETE` remove um recurso e retorna `204`.
--   [ ] Um ID inexistente retorna `404`.
--   [ ] O código foi versionado no repositório da equipe.
+- [ ] A aplicação inicia sem erros.
+- [ ] `Task` está configurada como entidade JPA.
+- [ ] `TaskRepository` está implementado.
+- [ ] Os dados são persistidos no MySQL.
+- [ ] O CRUD REST continua funcionando.
+- [ ] O Swagger UI está disponível.
+- [ ] A imagem `ms-task:1.0.0` foi criada.
+- [ ] MySQL e `ms-task` executam em contêineres.
+- [ ] Os contêineres estão conectados à `mytracker-net`.
+- [ ] O `ms-task` acessa o banco utilizando `DB_HOST=mysql-task`.
+- [ ] A imagem foi versionada e publicada no Docker Hub.
+- [ ] O código foi versionado no repositório da equipe.
 
-## DevLabs 
+## DevLabs
 
-O passo a passo completo deste laboratório está disponível no **DevLabs**:
+O passo a passo completo deste laboratório está disponível no **DevLabs — Escola de Dev**:
 
-**Laboratório API REST e Microsserviços:**  
-https://devlabs.escdodev.com.br/labs/backend-api-rest
+**Laboratório API REST, MySQL e Docker:**  
+https://devlabs.escdodev.com.br/labs/backend-api-mysql-docker
 
 ---
 
