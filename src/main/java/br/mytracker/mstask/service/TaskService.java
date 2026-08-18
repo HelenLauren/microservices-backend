@@ -1,49 +1,51 @@
 package br.mytracker.mstask.service;
 
 import br.mytracker.mstask.domain.Task;
-import br.mytracker.mstask.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class TaskService {
 
-    private final TaskRepository taskRepository;
-
-    public TaskService(TaskRepository taskRepository) {
-        this.taskRepository = taskRepository;
-    }
+    private final ConcurrentHashMap<Long, Task> tasks = new ConcurrentHashMap<>();
+    private final AtomicLong sequence = new AtomicLong(0);
 
     public List<Task> listar() {
-        return taskRepository.findAll();
+        return new ArrayList<>(tasks.values());
     }
 
     public Optional<Task> buscar(Long id) {
-        return taskRepository.findById(id);
+        return Optional.ofNullable(tasks.get(id));
     }
 
     public Task salvar(Task task) {
-        task.setId(null);
-        return taskRepository.save(task);
+        Long id = sequence.incrementAndGet();
+        task.setId(id);
+        tasks.put(id, task);
+        return task;
     }
 
     public Optional<Task> atualizar(Long id, Task dados) {
-        return taskRepository.findById(id).map(atual -> {
-            atual.setTitulo(dados.getTitulo());
-            atual.setDescricao(dados.getDescricao());
-            atual.setPrioridade(dados.getPrioridade());
-            atual.setConcluida(dados.isConcluida());
-            return taskRepository.save(atual);
-        });
+        Task atual = tasks.get(id);
+        if (atual == null) {
+            return Optional.empty();
+        }
+
+        atual.setTitulo(dados.getTitulo());
+        atual.setDescricao(dados.getDescricao());
+        atual.setPrioridade(dados.getPrioridade());
+        atual.setConcluida(dados.isConcluida());
+        tasks.put(id, atual);
+
+        return Optional.of(atual);
     }
 
     public boolean deletar(Long id) {
-        if (!taskRepository.existsById(id)) {
-            return false;
-        }
-        taskRepository.deleteById(id);
-        return true;
+        return tasks.remove(id) != null;
     }
 }
