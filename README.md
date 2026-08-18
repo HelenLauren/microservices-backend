@@ -128,13 +128,13 @@ Uma tarefa possui inicialmente a seguinte representação:
 
 ## API REST
 
-  Método     Endpoint        Operação
-  ---------- --------------- -------------------------
-  `GET`      `/tasks`        Listar todas as tarefas
-  `GET`      `/tasks/{id}`   Consultar uma tarefa
-  `POST`     `/tasks`        Cadastrar uma tarefa
-  `PUT`      `/tasks/{id}`   Atualizar uma tarefa
-  `DELETE`   `/tasks/{id}`   Excluir uma tarefa
+| Método | Endpoint | Operação |
+|---|---|---|
+| `GET` | `/tasks` | Listar todas as tarefas |
+| `GET` | `/tasks/{id}` | Consultar uma tarefa |
+| `POST` | `/tasks` | Cadastrar uma tarefa |
+| `PUT` | `/tasks/{id}` | Atualizar uma tarefa |
+| `DELETE` | `/tasks/{id}` | Excluir uma tarefa |
 
 A URL identifica o **recurso**, enquanto o método HTTP representa a
 **operação** realizada sobre ele.
@@ -229,12 +229,12 @@ Resposta esperada: **204 No Content**.
 
 ## Códigos HTTP utilizados
 
-  Código             Significado
-  ------------------ -----------------------------------
-  `200 OK`           Consulta ou atualização realizada
-  `201 Created`      Recurso criado
-  `204 No Content`   Recurso excluído
-  `404 Not Found`    Recurso não encontrado
+| Código | Significado |
+|---|---|
+| `200 OK` | Consulta ou atualização realizada |
+| `201 Created` | Recurso criado |
+| `204 No Content` | Recurso excluído |
+| `404 Not Found` | Recurso não encontrado |
 
 ## Atividade
 
@@ -242,14 +242,14 @@ Depois de concluir o exemplo do **MyTracker**, adapte a implementação ao
 cenário definido pela sua equipe.
 
 1.  Identifique uma funcionalidade de negócio candidata a microsserviço.
-3.  Defina o recurso principal e seus atributos.
-4.  Defina os endpoints REST.
-5.  Crie um projeto Spring Boot independente.
-6.  Implemente as camadas `domain`, `service` e `controller`.
-7.  Mantenha os objetos em memória nesta primeira versão.
-8.  Teste `GET`, `POST`, `PUT` e `DELETE`.
-9.  Versione o código no repositório da equipe.
-10. Relacione a implementação às Tasks técnicas correspondentes no Azure
+2.  Defina o recurso principal e seus atributos.
+3.  Defina os endpoints REST.
+4.  Crie um projeto Spring Boot independente.
+5.  Implemente as camadas `domain`, `service` e `controller`.
+6.  Mantenha os objetos em memória nesta primeira versão.
+7.  Teste `GET`, `POST`, `PUT` e `DELETE`.
+8.  Versione o código no repositório da equipe.
+9.  Relacione a implementação às Tasks técnicas correspondentes no Azure
     Boards.
 
 ## Checklist
