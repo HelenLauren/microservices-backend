@@ -32,15 +32,14 @@ public class TaskController {
 
     @PostMapping
     public ResponseEntity<Task> salvar(@RequestBody Task task) {
-        Task criada = taskService.salvar(task);
-        return ResponseEntity.status(HttpStatus.CREATED).body(criada);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(taskService.salvar(task));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Task> atualizar(
             @PathVariable Long id,
             @RequestBody Task task) {
-
         return taskService.atualizar(id, task)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
